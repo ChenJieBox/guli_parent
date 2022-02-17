@@ -70,13 +70,12 @@ public class EduTeacherController {
 
     //条件分页查询教师方法
     @ResponseBody
-    @GetMapping("pageTeacherCondition")
-    public Result pageTeacherCondition( Integer pageNum,  Integer size, TeacherQuery teacherQuery){
+    @PostMapping("pageTeacherCondition")
+    public Result pageTeacherCondition( Integer pageNum,  Integer size,@RequestBody(required = false)   TeacherQuery teacherQuery){
         if(StringUtils.isEmpty(pageNum))
             pageNum = 0;
         if(StringUtils.isEmpty(size))
             size = 5;
-        System.out.println(pageNum+" "+size);
         Page<EduTeacher> pageTeacher = new Page<>(pageNum,size);
         //构建条件
         QueryWrapper<EduTeacher> wrapper = new QueryWrapper<>();
@@ -87,12 +86,12 @@ public class EduTeacherController {
         String begin = teacherQuery.getBegin();
         if(!StringUtils.isEmpty(name))
             wrapper.like("name",name);
-        if(!StringUtils.isEmpty(end))
-            wrapper.like("end",end);
+//        if(!StringUtils.isEmpty(end))
+//            wrapper.like("end",end);
         if(!StringUtils.isEmpty(level))
             wrapper.like("level",level);
-        if(!StringUtils.isEmpty(begin))
-            wrapper.like("begin",begin);
+//        if(!StringUtils.isEmpty(begin))
+//            wrapper.like("begin",begin);
 
         //调用方法分页查询
         eduTeacherService.page(pageTeacher,wrapper);
@@ -102,6 +101,16 @@ public class EduTeacherController {
         map.put("total",total);
         map.put("rows", records);
         return Result.ok().data(map);
+    }
+
+    //添加教师接口方法
+    @PostMapping("addTeacher")
+    public Result addTeacher(@RequestBody EduTeacher eduTeacher){
+        boolean save = eduTeacherService.save(eduTeacher);
+        if (save)
+            return Result.ok();
+        else
+            return Result.error();
     }
 }
 

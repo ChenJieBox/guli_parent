@@ -106,7 +106,7 @@ public class EduTeacherController {
     //添加教师接口方法
     @PostMapping("addTeacher")
     public Result addTeacher(@RequestBody EduTeacher eduTeacher){
-        System.out.println("添加教师");
+
         boolean save = eduTeacherService.save(eduTeacher);
         if (save)
             return Result.ok();

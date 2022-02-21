@@ -5,6 +5,7 @@ import com.atguigu.commonutils.Result;
 import com.atguigu.eduservice.entity.EduTeacher;
 import com.atguigu.eduservice.entity.vo.TeacherQuery;
 import com.atguigu.eduservice.service.EduTeacherService;
+import com.atguigu.servicebase.exceptionhandler.ChenException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
@@ -105,13 +106,34 @@ public class EduTeacherController {
 
     //添加教师接口方法
     @PostMapping("addTeacher")
-    public Result addTeacher(@RequestBody EduTeacher eduTeacher){
-
+    public Result addTeacher(@RequestBody EduTeacher eduTeacher) {
+        try {
+            int result = 8/0;
+        } catch (Exception e) {
+            throw new ChenException(20001,"执行了自定义异常处理....");
+        }
         boolean save = eduTeacherService.save(eduTeacher);
+
         if (save)
             return Result.ok();
         else
             return Result.error();
     }
+
+    //根据id进行查询
+    @GetMapping("getTeacher/{id}")
+    public Result getTeacher(@PathVariable String id){
+        EduTeacher eduTeacher = eduTeacherService.getById(id);
+        return Result.ok().data("teacher",eduTeacher);
+    }
+    //根据讲师id进行修改
+    @PostMapping("updateTeacher")
+    public Result updateTeacher(@RequestBody EduTeacher eduTeacher){
+        boolean flag = eduTeacherService.saveOrUpdate(eduTeacher);
+        return flag ? Result.ok().data("teacher",eduTeacher):Result.error();
+    }
+
+
+
 }
 

@@ -1,11 +1,13 @@
 package com.atguigu.servicebase.exceptionhandler;
 
 import com.atguigu.commonutils.Result;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @ControllerAdvice
+@Slf4j
 public class GlobalException {
     @ExceptionHandler(Exception.class)
     @ResponseBody
@@ -23,6 +25,7 @@ public class GlobalException {
     @ResponseBody()
     public Result error(ChenException e){
         e.printStackTrace();
+        log.error(e.getMsg());
         return Result.error().code(e.getCode()).message(e.getMsg());
     }
 }

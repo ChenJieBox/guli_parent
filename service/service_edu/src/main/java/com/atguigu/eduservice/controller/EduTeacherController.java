@@ -27,6 +27,7 @@ import java.util.Map;
  * @author cheJieBox
  * @since 2022-02-14
  */
+@CrossOrigin
 @RestController
 @RequestMapping("/eduservice/edu-teacher")
 @Api(tags = "教师管理")
@@ -46,11 +47,10 @@ public class EduTeacherController {
     //逻辑删除讲师的方法
     @ResponseBody
     @DeleteMapping("delete")
-    public Result removeTeacher( String id){
+    public Result removeTeacher(String id){
         if(id==null)
             return Result.error();
         boolean flag = eduTeacherService.removeById(id);
-        System.out.println(flag);
         return flag? Result.ok(): Result.error();
     }
 
@@ -72,28 +72,29 @@ public class EduTeacherController {
     //条件分页查询教师方法
     @ResponseBody
     @PostMapping("pageTeacherCondition")
-    public Result pageTeacherCondition( Integer pageNum,  Integer size,@RequestBody(required = false)   TeacherQuery teacherQuery){
-        if(StringUtils.isEmpty(pageNum))
-            pageNum = 0;
-        if(StringUtils.isEmpty(size))
-            size = 5;
-        Page<EduTeacher> pageTeacher = new Page<>(pageNum,size);
+    public Result pageTeacherCondition( Integer page,  Integer limit,@RequestBody(required = false)   TeacherQuery teacherQuery){
+        if(StringUtils.isEmpty(page))
+            page = 0;
+        if(StringUtils.isEmpty(limit))
+            limit = 5;
+        Page<EduTeacher> pageTeacher = new Page<>(page,limit);
         //构建条件
         QueryWrapper<EduTeacher> wrapper = new QueryWrapper<>();
         //wrapper
-        String name = teacherQuery.getName();
-        String end = teacherQuery.getEnd();
-        Integer level = teacherQuery.getLevel();
-        String begin = teacherQuery.getBegin();
-        if(!StringUtils.isEmpty(name))
-            wrapper.like("name",name);
+        if(teacherQuery!=null) {
+            String name = teacherQuery.getName();
+            String end = teacherQuery.getEnd();
+            Integer level = teacherQuery.getLevel();
+            String begin = teacherQuery.getBegin();
+            if (!StringUtils.isEmpty(name))
+                wrapper.like("name", name);
 //        if(!StringUtils.isEmpty(end))
 //            wrapper.like("end",end);
-        if(!StringUtils.isEmpty(level))
-            wrapper.like("level",level);
+            if (!StringUtils.isEmpty(level))
+                wrapper.like("level", level);
 //        if(!StringUtils.isEmpty(begin))
 //            wrapper.like("begin",begin);
-
+        }
         //调用方法分页查询
         eduTeacherService.page(pageTeacher,wrapper);
         long total = pageTeacher.getTotal();
@@ -107,11 +108,11 @@ public class EduTeacherController {
     //添加教师接口方法
     @PostMapping("addTeacher")
     public Result addTeacher(@RequestBody EduTeacher eduTeacher) {
-        try {
-            int result = 8/0;
-        } catch (Exception e) {
-            throw new ChenException(20001,"执行了自定义异常处理....");
-        }
+//        try {
+//            int result = 8/0;
+//        } catch (Exception e) {
+//            throw new ChenException(20001,"执行了自定义异常处理....");
+//        }
         boolean save = eduTeacherService.save(eduTeacher);
 
         if (save)
@@ -121,8 +122,8 @@ public class EduTeacherController {
     }
 
     //根据id进行查询
-    @GetMapping("getTeacher/{id}")
-    public Result getTeacher(@PathVariable String id){
+    @GetMapping("getTeacher")
+    public Result getTeacher(String id){
         EduTeacher eduTeacher = eduTeacherService.getById(id);
         return Result.ok().data("teacher",eduTeacher);
     }

@@ -12,14 +12,12 @@ public class EduLoginController {
     //login
     @PostMapping("login")
     public Result login(){
-        System.out.println("/eduService/user/login");
         return Result.ok().data("token","admin");
     }
 
     //info
     @GetMapping("info")
     public Result info(){
-        System.out.println("/eduService/user/info");
         return Result.ok().data("roles","[admin]").data("name","admin");
     }
 }

@@ -2,6 +2,7 @@ package com.atguigu.oss.service.impl;
 
 import com.atguigu.oss.service.OssService;
 import com.atguigu.oss.utils.ConstantPropertiesUtils;
+import org.joda.time.DateTime;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import com.aliyun.oss.ClientException;
@@ -10,6 +11,7 @@ import com.aliyun.oss.OSSClientBuilder;
 import com.aliyun.oss.OSSException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.UUID;
 
 @Service
 public class OssServiceImpl implements OssService {
@@ -25,6 +27,11 @@ public class OssServiceImpl implements OssService {
         // 填写本地文件的完整路径，例如D:\\localpath\\examplefile.txt。
         // 如果未指定本地路径，则默认从示例程序所属项目对应本地路径中上传文件流。
         String fileName = file.getOriginalFilename();
+        //在文件名中添加唯一标识的UUID
+        String uuid = UUID.randomUUID().toString().replace("-","");
+        fileName = uuid+ fileName;
+        String dataPath = new DateTime().toString("yyyy/MM/dd");
+        fileName = dataPath+"/"+fileName;
         // 创建OSSClient实例。
         OSS ossClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
         String url = null;
@@ -37,7 +44,7 @@ public class OssServiceImpl implements OssService {
             //将上传之后的文件返回
             //需要将上传到阿里云OSS的路径手动拼接出来
             //https://chenbox1.oss-cn-guangzhou.aliyuncs.com
-            url = "https://"+endpoint+"."+endpoint+"/"+fileName;
+            url = "https://"+bucketName+"."+endpoint+"/"+fileName;
         } catch (OSSException oe) {
             System.out.println("Caught an OSSException, which means your request made it to OSS, "
                     + "but was rejected with an error response for some reason.");

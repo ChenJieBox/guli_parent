@@ -2,16 +2,16 @@ package com.atguigu.eduservice.controller;
 
 
 import com.atguigu.commonutils.Result;
+import com.atguigu.eduservice.entity.subject.OneSubject;
 import com.atguigu.eduservice.service.EduSubjectService;
 import com.baomidou.mybatisplus.extension.api.R;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 /**
  * <p>
@@ -22,7 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
  * @since 2022-03-09
  */
 @RestController
-@RequestMapping("/eduservice/edu-subject")
+@RequestMapping("/eduservice/subject")
 @CrossOrigin
 @Api(tags = "课程管理")
 public class EduSubjectController {
@@ -31,8 +31,15 @@ public class EduSubjectController {
     @PostMapping("addSubject")
     public Result addSubject(MultipartFile file){
         //将上传过来的文件
+        System.out.println(file.getName());
         eduSubjectService.addSubject(file,eduSubjectService);
         return Result.ok();
+    }
+
+    @GetMapping("getAllSubject")
+    public Result getAllSubject(){
+        List<OneSubject> list =  eduSubjectService.getAllOneTwoSubject();
+        return Result.ok().data("list",list);
     }
 }
 

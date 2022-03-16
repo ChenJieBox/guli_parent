@@ -1,5 +1,6 @@
 package com.atguigu.eduservice.service.impl;
 
+import ch.qos.logback.core.joran.util.beans.BeanUtil;
 import com.alibaba.excel.EasyExcel;
 import com.atguigu.eduservice.entity.EduSubject;
 import com.atguigu.eduservice.entity.excel.SubjectData;
@@ -41,53 +42,71 @@ public class EduSubjectServiceImpl extends ServiceImpl<EduSubjectMapper, EduSubj
     //课程分类列表
     @Override
     public List<OneSubject> getAllOneTwoSubject() {
-        //1 查询所有一级分类  parentid = 0
-        QueryWrapper<EduSubject> wrapperOne = new QueryWrapper<>();
-        wrapperOne.eq("parent_id","0");
-        List<EduSubject> oneSubjectList = baseMapper.selectList(wrapperOne);
+        //--要查询得到一种结构体 首先在表中查询出所有的一级分类 实体类型为EduSubject
+        /*
+        * [
+        *   {
+        *       id:"xxx",
+        *       title:"XXX"
+        *       children:[
+        *            {
+        *              id:"xxx",
+        *              title:"XXX"
+        *            },
+        *            {
+        *              id:"xxx",
+        *              title:"XXX"
+        *            },
+        *       ]
+        *   },
+        *   .......
+        *   ..........
+        *   {
+        *       id:"xxx",
+        *       title:"XXX"
+        *       children:[....]
+        *   }
+        * ]
+        * */
+        List<OneSubject> resultList = new ArrayList<>();
+        //查询所有的一级分类
+        QueryWrapper<EduSubject> oneQueryWrapper = new QueryWrapper<>();
+        oneQueryWrapper.eq("parent_id","0");
+        List<EduSubject> oneSubjectList = baseMapper.selectList(oneQueryWrapper);
 
-        //2 查询所有二级分类  parentid != 0
-        QueryWrapper<EduSubject> wrapperTwo = new QueryWrapper<>();
-        wrapperTwo.ne("parent_id","0");
-        List<EduSubject> twoSubjectList = baseMapper.selectList(wrapperTwo);
+        //查询所有的二级分类
+        QueryWrapper<EduSubject> twoQueryWrapper = new QueryWrapper<>();
+        twoQueryWrapper.ne("parent_id","0");
+        List<EduSubject> twoSubjectList = baseMapper.selectList(twoQueryWrapper);
 
-        //创建list集合，用于存储最终封装数据
-        List<OneSubject> finalSubjectList = new ArrayList<>();
-
-        //3 封装一级分类
-        //查询出来所有的一级分类list集合遍历，得到每个一级分类对象，获取每个一级分类对象值，
-        //封装到要求的list集合里面 List<OneSubject> finalSubjectList
-        for (int i = 0; i < oneSubjectList.size(); i++) { //遍历oneSubjectList集合
-            //得到oneSubjectList每个eduSubject对象
-            EduSubject eduSubject = oneSubjectList.get(i);
-            //把eduSubject里面值获取出来，放到OneSubject对象里面
+        //遍历所有的一级分类,类型为EduSubject
+        for (int i = 0; i < oneSubjectList.size(); i++) {
+            //currentOneSubject为当前遍历的一级分类课程
+            EduSubject currentOneSubject = oneSubjectList.get(i);
+            /*copyProperties方法将eduSubject对象中的相应属性copy到oneSubject中
+            注意如果字段名称不相同不能复制的*/
             OneSubject oneSubject = new OneSubject();
-//            oneSubject.setId(eduSubject.getId());
-//            oneSubject.setTitle(eduSubject.getTitle());
-            //eduSubject值复制到对应oneSubject对象里面
-            BeanUtils.copyProperties(eduSubject,oneSubject);
-            //多个OneSubject放到finalSubjectList里面
-            finalSubjectList.add(oneSubject);
+            BeanUtils.copyProperties(currentOneSubject,oneSubject);
+            resultList.add(oneSubject);
+            //
+            List<TwoSubject> childrenList = new ArrayList<>();
 
-            //在一级分类循环遍历查询所有的二级分类
-            //创建list集合封装每个一级分类的二级分类
-            List<TwoSubject> twoFinalSubjectList = new ArrayList<>();
-            //遍历二级分类list集合
+            //遍历所有的二级分类,类型为EduSubject,并将所有相关二级分类添加到childrenList中
             for (int m = 0; m < twoSubjectList.size(); m++) {
-                //获取每个二级分类
-                EduSubject tSubject = twoSubjectList.get(m);
-                //判断二级分类parentid和一级分类id是否一样
-                if(tSubject.getParentId().equals(eduSubject.getId())) {
-                    //把tSubject值复制到TwoSubject里面，放到twoFinalSubjectList里面
+                //currentTwoSubject为当前遍历的二级分类课程
+                EduSubject currentTwoSubject = twoSubjectList.get(m);
+                if(currentTwoSubject.getParentId().equals(currentOneSubject.getId())){
                     TwoSubject twoSubject = new TwoSubject();
-                    BeanUtils.copyProperties(tSubject,twoSubject);
-                    twoFinalSubjectList.add(twoSubject);
+                    BeanUtils.copyProperties(currentTwoSubject,twoSubject);
+                    childrenList.add(twoSubject);
                 }
             }
-            //把一级下面所有二级分类放到一级分类里面
-            oneSubject.setChildren(twoFinalSubjectList);
+            //将一级分类与二级分类相关联
+            oneSubject.setChildren(childrenList);
+
         }
-        return finalSubjectList;
+
+        return resultList;
     }
 
 }

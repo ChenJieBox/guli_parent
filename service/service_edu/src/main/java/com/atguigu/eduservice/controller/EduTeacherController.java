@@ -14,6 +14,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.print.attribute.standard.PresentationDirection;
+import javax.swing.plaf.IconUIResource;
 import javax.websocket.server.PathParam;
 import java.util.HashMap;
 import java.util.List;
@@ -41,7 +42,7 @@ public class EduTeacherController {
     @GetMapping("findAll")
     public Result findAllTeacher(){
         List<EduTeacher> list = eduTeacherService.list(null);
-        return Result.ok().data("item",list);
+        return Result.ok().data("items",list);
     }
 
     //逻辑删除讲师的方法

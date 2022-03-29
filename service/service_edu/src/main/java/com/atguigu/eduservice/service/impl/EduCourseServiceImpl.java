@@ -1,17 +1,27 @@
 package com.atguigu.eduservice.service.impl;
 
-import com.atguigu.eduservice.entity.EduCourse;
-import com.atguigu.eduservice.entity.EduCourseDescription;
+import com.atguigu.commonutils.Result;
+import com.atguigu.eduservice.entity.*;
 import com.atguigu.eduservice.entity.vo.CourseInfoVo;
+import com.atguigu.eduservice.entity.vo.CourseListVo;
+import com.atguigu.eduservice.entity.vo.CoursePublishVo;
 import com.atguigu.eduservice.mapper.EduCourseMapper;
+import com.atguigu.eduservice.service.EduChapterService;
 import com.atguigu.eduservice.service.EduCourseDescriptionService;
 import com.atguigu.eduservice.service.EduCourseService;
+import com.atguigu.eduservice.service.EduVideoService;
 import com.atguigu.servicebase.exceptionhandler.ChenException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -26,6 +36,12 @@ public class EduCourseServiceImpl extends ServiceImpl<EduCourseMapper, EduCourse
 
     @Autowired
     private EduCourseDescriptionService eduCourseDescriptionService;
+
+    @Autowired
+    private EduChapterService eduChapterService;
+
+    @Autowired
+    private EduVideoService eduVideoService;
 
     @Override
     public String saveCourseInfo(CourseInfoVo courseInfoVo) {
@@ -74,5 +90,36 @@ public class EduCourseServiceImpl extends ServiceImpl<EduCourseMapper, EduCourse
         eduCourseDescription.setId(edeCourse.getId());
         eduCourseDescriptionService.updateById(eduCourseDescription);
         return edeCourse.getId();
+    }
+
+    @Override
+    public CoursePublishVo getPublishCourse(String courseId) {
+        return baseMapper.getPublishCourseInfo(courseId);
+    }
+    //分页查询自定义SQL
+    @Override
+    public Map<String,Object> getCourseList(int pageNum, int size) {
+        Page<CourseListVo> page = new Page<>(pageNum,size);
+        IPage<CourseListVo> mapIPage = baseMapper.getCourseListVo(page);
+        List<CourseListVo> list = mapIPage.getRecords();
+        long total = mapIPage.getTotal();
+        Map<String,Object> map = new HashMap<>();
+        map.put("total",total);
+        map.put("courseList",list);
+        return map;
+    }
+
+    @Override
+    public void deleteCourse(String courseId) {
+        //操作删除EduCourse
+        baseMapper.deleteById(courseId);
+        //操作删除EduChapter
+        QueryWrapper<EduChapter> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("course_id",courseId);
+        eduChapterService.remove(queryWrapper);
+        //操作删除EduVideo
+        QueryWrapper<EduVideo> queryWrapper1 = new QueryWrapper<>();
+        queryWrapper1.eq("course_id",courseId);
+        eduVideoService.remove(queryWrapper1);
     }
 }

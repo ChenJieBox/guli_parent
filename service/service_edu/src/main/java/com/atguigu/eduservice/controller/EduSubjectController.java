@@ -31,7 +31,6 @@ public class EduSubjectController {
     @PostMapping("addSubject")
     public Result addSubject(MultipartFile file){
         //将上传过来的文件
-        System.out.println(file.getName());
         eduSubjectService.addSubject(file,eduSubjectService);
         return Result.ok();
     }

@@ -43,6 +43,7 @@ public class EduVideoController {
     @PostMapping("updateVideo")
     public Result updateVideo(@RequestBody EduVideo video){
         boolean save = eduVideoService.updateById(video);
+        System.out.println(video.toString());
         return Result.ok();
     }
 }

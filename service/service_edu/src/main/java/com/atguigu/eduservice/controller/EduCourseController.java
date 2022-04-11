@@ -68,14 +68,12 @@ public class EduCourseController {
     //获取所有课程数据 多表查询 EduCourse+ EduTeacher+ EduSubject
     @GetMapping("getCourseList")
     public Result getCourseList(Integer page, Integer size){
-        System.out.println(page+"a"+size);
         if (page==null){
             page=0;
         }
         if(size==null){
             size=5;
         }
-        System.out.println(page+"a"+size);
         Map<String , Object> map = eduCourseService.getCourseList(page,size);
         return Result.ok().data(map);
     }

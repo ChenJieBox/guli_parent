@@ -1,5 +1,6 @@
 package com.atguigu.vod.controller;
 
+import com.aliyuncs.exceptions.ClientException;
 import com.atguigu.commonutils.Result;
 import com.atguigu.vod.service.VodService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,15 +17,17 @@ public class VodController {
 
     //上传视频到阿里云
     @PostMapping("uploadVideo")
-    public Result uploadVideo(MultipartFile file){
+    public Result uploadVideo(@RequestParam MultipartFile file){
         String videoId = vodService.uploadVideoAly(file);
         return Result.ok().data("videoId",videoId);
     }
 
     //从阿里云删除云端视频
-    @DeleteMapping("deleteVideo")
-    public Result deleteVideo(String videoId){
-
+    @DeleteMapping("removeAlyVideo")
+    public Result deleteVideo(@RequestParam(value = "videoId") String videoId) throws ClientException {
+        vodService.removeVideoAly(videoId);
         return Result.ok();
     }
+
+
 }

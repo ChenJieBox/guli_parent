@@ -3,9 +3,13 @@ package com.atguigu.eduservice.controller;
 
 import com.atguigu.commonutils.Result;
 import com.atguigu.eduservice.entity.EduCourse;
+import com.atguigu.eduservice.entity.EduVideo;
 import com.atguigu.eduservice.entity.vo.CourseInfoVo;
 import com.atguigu.eduservice.entity.vo.CoursePublishVo;
 import com.atguigu.eduservice.service.EduCourseService;
+import com.atguigu.eduservice.service.EduVideoService;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,10 +27,13 @@ import java.util.Map;
 @CrossOrigin
 @RestController
 @RequestMapping("/eduservice/edu-course")
+@Api(tags = "课程管理")
+
 public class EduCourseController {
     @Autowired
     private EduCourseService eduCourseService;
-
+    @Autowired
+    private EduVideoService eduVideoService;
     // 添加课程信息 操作两张表 EduCourse+ EduDescription
     @PostMapping("addCourseInfo")
     public Result addCourseInfo(@RequestBody CourseInfoVo courseInfoVo){
@@ -84,5 +91,7 @@ public class EduCourseController {
         eduCourseService.deleteCourse(courseId);
         return Result.ok();
     }
+
+
 }
 

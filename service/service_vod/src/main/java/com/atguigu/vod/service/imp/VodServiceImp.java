@@ -3,6 +3,11 @@ package com.atguigu.vod.service.imp;
 import com.aliyun.vod.upload.impl.UploadVideoImpl;
 import com.aliyun.vod.upload.req.UploadStreamRequest;
 import com.aliyun.vod.upload.resp.UploadStreamResponse;
+import com.aliyuncs.DefaultAcsClient;
+import com.aliyuncs.exceptions.ClientException;
+import com.aliyuncs.profile.DefaultProfile;
+import com.aliyuncs.vod.model.v20170321.DeleteVideoRequest;
+import com.aliyuncs.vod.model.v20170321.DeleteVideoResponse;
 import com.atguigu.vod.service.VodService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,10 +39,26 @@ public class VodServiceImp implements VodService {
             } else { //如果设置回调URL无效，不影响视频上传，可以返回VideoId同时会返回错误码。其他情况上传失败时，VideoId为空，此时需要根据返回错误码分析具体错误原因
                 videoId = response.getVideoId();
             }
+            System.out.println(videoId);
             return videoId;
         }catch(Exception e) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+    @Override
+    public void removeVideoAly(String videoId) {
+        System.out.println("VodServiceImp:正在删除视频："+videoId);
+        DeleteVideoResponse response = new DeleteVideoResponse();
+        try {
+            DefaultProfile profile = DefaultProfile.getProfile("cn-shanghai", ConstantVodUtils.ACCESS_KEY_ID,ConstantVodUtils.ACCESS_KEY_SECRET);
+            DefaultAcsClient client = new DefaultAcsClient(profile);
+            DeleteVideoRequest request = new DeleteVideoRequest();
+            request.setVideoIds(videoId);
+            response = client.getAcsResponse(request);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

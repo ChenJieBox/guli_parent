@@ -2,6 +2,7 @@ package com.atguigu.eduservice.service;
 
 import com.atguigu.eduservice.entity.EduVideo;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.springframework.stereotype.Service;
 
 /**
  * <p>
@@ -11,6 +12,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @author cheJieBox
  * @since 2022-03-16
  */
+@Service
 public interface EduVideoService extends IService<EduVideo> {
 
+    boolean removeByVideoId(String id);
 }

@@ -6,8 +6,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
 @Component
-@FeignClient("service-vod")
+@FeignClient(name = "service-vod",fallback = VodClientImp.class)
 public interface VodClient {
     @DeleteMapping("/eduvod/video/removeAlyVideo")
     public Result deleteVideo(@RequestParam("videoId")String videoId);
+
+    @GetMapping("/eduvod/video/returnMapping")
+    Result returnMapping(@RequestParam("returnData")String returnData);
 }

@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-@ControllerAdvice
+@ControllerAdvice()
 @Slf4j
 public class GlobalException {
     @ExceptionHandler(Exception.class)
@@ -21,11 +21,17 @@ public class GlobalException {
         e.printStackTrace();
         return Result.error().message("执行了ArithmeticException异常");
     }
+
+    /*
+    * 当检测到抛出该异常后 比如
+    * throw new ChenException(xx,xx)
+    * 则会执行该方法 并直接将错误的异常信息返回给请求方接口
+    * */
     @ExceptionHandler(ChenException.class)
-    @ResponseBody()
+    @ResponseBody
     public Result error(ChenException e){
         e.printStackTrace();
         log.error(e.getMsg());
-        return Result.error().code(e.getCode()).message(e.getMsg());
+        return Result.error().message(e.getMsg()).code(e.getCode());
     }
 }

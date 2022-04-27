@@ -29,5 +29,10 @@ public class VodController {
         return Result.ok();
     }
 
+    //测试服务调用返回值
+    @GetMapping("returnMapping")
+    public Result returnMapping(@RequestParam(value = "returnData") String returnData){
+        return Result.ok().data("Data",returnData);
+    }
 
 }

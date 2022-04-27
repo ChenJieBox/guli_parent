@@ -1,9 +1,11 @@
 package com.atguigu.eduservice.service.impl;
 
+import com.atguigu.commonutils.Result;
 import com.atguigu.eduservice.client.VodClient;
 import com.atguigu.eduservice.entity.EduVideo;
 import com.atguigu.eduservice.mapper.EduVideoMapper;
 import com.atguigu.eduservice.service.EduVideoService;
+import com.atguigu.servicebase.exceptionhandler.ChenException;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,9 +30,11 @@ public class EduVideoServiceImpl extends ServiceImpl<EduVideoMapper, EduVideo> i
     public boolean removeByVideoId(String id) {
         EduVideo eduVideo = baseMapper.selectById(id);
         String videoSourceId = eduVideo.getVideoSourceId();
-        if(!StringUtils.isEmpty(videoSourceId))
-            vodClient.deleteVideo(videoSourceId);
-
+        if(!StringUtils.isEmpty(videoSourceId)) {
+            Result r = vodClient.deleteVideo(videoSourceId);
+            if(r.getCode()==20001)
+                throw new ChenException(20001,"删除视频失败请检查Service_vod服务是否在线");
+        }
         Integer result = baseMapper.deleteById(id);
         return null != result && result > 0;
     }

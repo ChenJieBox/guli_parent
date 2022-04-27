@@ -139,7 +139,11 @@ public class EduCourseServiceImpl extends ServiceImpl<EduCourseMapper, EduCourse
         }
         String result = videoCourseId.substring(0,videoCourseId.length()-1);
 
-        vodClient.deleteVideo(result);
+        Result r = vodClient.deleteVideo(result);
+        if(r.getCode()==20001){
+            throw new ChenException(20001,"删除视频失败，请检查service_vod服务是否在线");
+        }
+
         //操作删除EduVideo
         QueryWrapper<EduVideo> queryWrapper1 = new QueryWrapper<>();
         queryWrapper1.eq("course_id",courseId);
